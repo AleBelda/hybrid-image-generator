@@ -60,6 +60,7 @@ def display_image(np_image_1, np_image_2):
          sg.Button('Save Image'), sg.Button('Load Image')],
 
         [sg.Text("Histogram Equalization"), sg.Checkbox('',key='H_EQUALIZED'), 
+         sg.Text("Grayscale"), sg.Checkbox('', key='GRAYSCALE'),
          sg.Push(), sg.Button("Image Histograms"), sg.Button('Apply Filters'), sg.Button('Reset'), sg.Button('Quit')],
     ]
 
@@ -76,6 +77,7 @@ def display_image(np_image_1, np_image_2):
         low_value = int(values['LOW'])
         high_value = int(values['HIGH'])
         heq_value = values['H_EQUALIZED']
+        is_grayscale = values['GRAYSCALE']
     
         # When load settings button is clicked
         if event == "Load Settings":
@@ -130,6 +132,10 @@ def display_image(np_image_1, np_image_2):
             # Apply histogram equalization to final image if checked
             if heq_value:
                 final_filtered_image = hist_equalization(final_filtered_image)
+
+            # Apply grayscale to final image if checked
+            if is_grayscale:
+                final_filtered_image = img_to_grayscale(final_filtered_image)
                 
             # Update final image and display it
             ff_image_data = np_im_to_data(final_filtered_image)
@@ -144,6 +150,7 @@ def display_image(np_image_1, np_image_2):
             window['HIGH'].update(value=0)
             window['LOW'].update(value=0)
             window['H_EQUALIZED'].update(value=False)
+            window['GRAYSCALE'].update(value=False)
             filtered_image_1 = original_image_1.copy()  # Reset to original image
             filtered_image_2 = original_image_2.copy()
             final_filtered_image = original_image_1.copy()
@@ -344,6 +351,11 @@ def hist_equalization(image):
 
     return equalized_img
 
+
+# changes image to grayscale
+def img_to_grayscale(image):
+    grayscale_img = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    return grayscale_img
 
 # Helper method to create window that displays image histograms
 def create_histogram_popup(image_1, image_2, image_hybrid):
